@@ -1,1 +1,26 @@
 @import url('line-awesome/dist/line-awesome/css/line-awesome.min.css');
+.todo-item {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    display: inline;
+    flex: 0 0 auto;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .creation-time {
+    color: #777;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+  }
+  
+  .delete-button {
+    color: #ff0000;
+    cursor: pointer;
+  }

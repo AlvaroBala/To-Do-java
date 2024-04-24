@@ -10,8 +10,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.component.html.Span;
 import java.time.format.DateTimeFormatter;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Paragraph;
 
 
 @Route("")
@@ -24,7 +25,12 @@ public class TodoView extends VerticalLayout {
 
         var task = new TextField();
         var button = new Button("Add");
-        var todos = new VerticalLayout();
+        var todos = new HorizontalLayout(); // Changed to HorizontalLayout
+        todos.setWidthFull(); // Ensure it spans the full width
+        todos.setPadding(false);
+        
+
+        
 
         todos.setPadding(false);
         button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -46,40 +52,40 @@ public class TodoView extends VerticalLayout {
     
 
     private Component createCheckbox(Todo todo) {
+        Div todoItemDiv = new Div();
+        todoItemDiv.addClassNames("todo-item");
+    
         // Checkbox for the todo task
         Checkbox checkbox = new Checkbox(todo.getTask(), todo.isDone());
         checkbox.addValueChangeListener(e -> {
             todo.setDone(e.getValue());
             repo.save(todo);
         });
-        
-        // Span for the creation time
-        Span creationTimeLabel = new Span("Created on: " + 
+    
+        // Paragraph for the creation time
+        Paragraph creationTimeParagraph = new Paragraph("Created on: " +
             todo.getCreationTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        
+        creationTimeParagraph.addClassNames("creation-time");
+    
         // Delete button
         Button deleteButton = new Button("Delete");
-        // No need to define the listener here, it will be added after todoLayout
-        
-        // Use HorizontalLayout for the checkbox and delete button
-        HorizontalLayout actionsLayout = new HorizontalLayout(checkbox, deleteButton);
-        actionsLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
-        
-        // Use VerticalLayout to stack the timestamp label and the actions horizontally
-        VerticalLayout todoLayout = new VerticalLayout(creationTimeLabel, actionsLayout);
-        todoLayout.setPadding(false); 
-        
-        // Now set the click listener for the delete button
+        deleteButton.addClassNames("delete-button");
         deleteButton.addClickListener(click -> {
             repo.delete(todo);
-            todoLayout.getParent().ifPresent(parentComponent -> {
-                if (parentComponent instanceof VerticalLayout) {
-                    ((VerticalLayout) parentComponent).remove(todoLayout);
-                }
-            });
+            // Use Vaadin's API to remove the component
+            todoItemDiv.getElement().removeFromParent();
         });
     
-        return todoLayout;
+        // Add components to the todo item div
+        todoItemDiv.add(checkbox, creationTimeParagraph, deleteButton);
+        todoItemDiv.getStyle()
+            .set("border", "1px solid #ccc")
+            .set("border-radius", "4px")
+            .set("padding", "10px")
+            .set("margin-bottom", "10px")
+            .set("background-color", "#f9f9f9");
+    
+        return todoItemDiv;
     }
     
 }
