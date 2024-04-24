@@ -1,8 +1,12 @@
 package com.example.application;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+
+
 
 @Entity
 public class Todo {
@@ -11,9 +15,18 @@ public class Todo {
     private Long id;
     private String task;
     private boolean done;
+    private LocalDateTime creationTime;
 
     public Todo(String task) {
         this.task = task;
+        this.creationTime = LocalDateTime.now();
+    }
+
+    public LocalDateTime getCreationTime() {
+        return creationTime;
+    }
+    public void setCreationTime(LocalDateTime creationTime) {
+        this.creationTime = creationTime;
     }
 
     public Todo() {

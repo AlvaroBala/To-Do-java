@@ -10,6 +10,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.component.html.Span;
+import java.time.format.DateTimeFormatter;
+
 
 @Route("")
 public class TodoView extends VerticalLayout {
@@ -43,27 +46,39 @@ public class TodoView extends VerticalLayout {
     
 
     private Component createCheckbox(Todo todo) {
-    
+        // Checkbox for the todo task
         Checkbox checkbox = new Checkbox(todo.getTask(), todo.isDone());
         checkbox.addValueChangeListener(e -> {
             todo.setDone(e.getValue());
             repo.save(todo);
         });
-    
+        
+        // Span for the creation time
+        Span creationTimeLabel = new Span("Created on: " + 
+            todo.getCreationTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        
+        // Delete button
         Button deleteButton = new Button("Delete");
+        // No need to define the listener here, it will be added after todoLayout
+        
+        // Use HorizontalLayout for the checkbox and delete button
+        HorizontalLayout actionsLayout = new HorizontalLayout(checkbox, deleteButton);
+        actionsLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+        
+        // Use VerticalLayout to stack the timestamp label and the actions horizontally
+        VerticalLayout todoLayout = new VerticalLayout(creationTimeLabel, actionsLayout);
+        todoLayout.setPadding(false); 
+        
+        // Now set the click listener for the delete button
         deleteButton.addClickListener(click -> {
             repo.delete(todo);
-            // Cast the parent component to HorizontalLayout and remove it from its own parent.
-            checkbox.getParent().ifPresent(parentComponent -> {
-                Component grandParentComponent = parentComponent.getParent().orElse(null);
-                if (grandParentComponent instanceof VerticalLayout) {
-                    ((VerticalLayout) grandParentComponent).remove(parentComponent);
+            todoLayout.getParent().ifPresent(parentComponent -> {
+                if (parentComponent instanceof VerticalLayout) {
+                    ((VerticalLayout) parentComponent).remove(todoLayout);
                 }
             });
         });
     
-        HorizontalLayout todoLayout = new HorizontalLayout(checkbox, deleteButton);
-        todoLayout.setDefaultVerticalComponentAlignment(Alignment.CENTER);
         return todoLayout;
     }
     
